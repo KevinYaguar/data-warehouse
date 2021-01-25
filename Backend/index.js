@@ -13,6 +13,9 @@ app.use(express.json());
 
 const {insertUser} = require('./Users/Users-Functions');
 
+const {data_request} = require('./Users/User-Middlewares')
+
+
 
 app.post('/create_user', (req, res)=>{
     let {nombre, apellido, email, perfil, password} = req.body;
@@ -25,6 +28,20 @@ app.post('/create_user', (req, res)=>{
             })
         }).catch(e=> console.log(e))
 })
+
+app.post('/login', data_request, (req, res)=>{
+    let {email} = req.body;
+    
+    let token = jwt.sign({email: email}, jwtClave);
+
+    res.status(200).send({
+        status:'ok',
+        messege:'Login successfull',
+        token: token
+    })
+
+})
+
 
 app.listen(process.env.SERVER_PORT, (req, res) => {
     console.log(`Servidor corriendo en el puerto ${process.env.SERVER_PORT}`)
