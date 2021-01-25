@@ -11,11 +11,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const {insertUser} = require('./Users/Users-Functions');
+const {insertUser, search_user} = require('./Users/Users-Functions');
 
-const {data_request} = require('./Users/User-Middlewares')
-
-
+const {data_request, if_user_exist_next} = require('./Users/User-Middlewares')
 
 app.post('/create_user', (req, res)=>{
     let {nombre, apellido, email, perfil, password} = req.body;
@@ -29,7 +27,7 @@ app.post('/create_user', (req, res)=>{
         }).catch(e=> console.log(e))
 })
 
-app.post('/login', data_request, (req, res)=>{
+app.post('/login', data_request, if_user_exist_next, (req, res)=>{
     let {email} = req.body;
     
     let token = jwt.sign({email: email}, jwtClave);
@@ -40,6 +38,15 @@ app.post('/login', data_request, (req, res)=>{
         token: token
     })
 
+})
+
+app.get('/user_info', (req, res) => {
+    let {email} = req.body;
+
+    search_user(email)
+        .then(response => {
+            res.status(200).send(response)
+        })
 })
 
 

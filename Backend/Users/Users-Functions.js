@@ -19,6 +19,14 @@ async function insertUser (nombre, apellido, email, perfil, password){
     return result;
 }
 
+async function search_user(email) {
+    let result = sequelize.query(`SELECT * FROM usuarios WHERE email = ?`, {
+        replacements: [email], type: sequelize.QueryTypes.SELECT
+    })
+    return result;
+}
+
 module.exports = {
-    insertUser
+    insertUser,
+    search_user
 }

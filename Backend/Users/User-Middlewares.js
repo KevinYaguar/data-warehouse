@@ -12,6 +12,8 @@ const sequelize = new Sequelize(
         }
 });
 
+const {search_user} = require('./Users-Functions')
+
 const data_request = (req, res, next) => {
     let{email, password} = req.body;
 
@@ -25,6 +27,23 @@ const data_request = (req, res, next) => {
     }
 }
 
+const if_user_exist_next = (req, res, next) => {
+    let {email} = req.body;
+    search_user(email)
+        .then(response => {
+            let user = response.find(u => u.Email === email)
+            if(user){
+                return next();
+            }else{
+                res.status(404).send({
+                    status:'404',
+                    messege:'User  not found'
+                })
+            }
+        })
+}
+
 module.exports = {
-    data_request
+    data_request,
+    if_user_exist_next
 }
