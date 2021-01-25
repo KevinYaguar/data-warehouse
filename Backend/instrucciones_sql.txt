@@ -1,0 +1,49 @@
+CREATE DATABASE data_warehouse;
+USE data_warehouse;
+
+CREATE TABLE `data_warehouse`. `usuarios`(`usuario_id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30) NOT NULL , `apellido` VARCHAR(30) NOT NULL , `Email` VARCHAR(30) NOT NULL , `Perfil` enum('Admin', 'Básico') NOT NULL, `password` VARCHAR(30) NOT NULL, PRIMARY KEY (`usuario_id`)) ENGINE = INNODB;
+
+CREATE TABLE `data_warehouse`.`regiones`(`id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30), PRIMARY KEY(`id`)) ENGINE = INNODB;
+
+CREATE TABLE `data_warehouse`.`paises`(`id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30), `id_region` INT(200), PRIMARY KEY(`id`)) ENGINE = INNODB;
+
+CREATE TABLE `data_warehouse`.`ciudades`(`id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30), `id_region` INT(200), `id_pais` INT(200), PRIMARY KEY(`id`)) ENGINE = INNODB;
+
+CREATE TABLE `data_warehouse`.`compañías`(`id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30), `dirección` VARCHAR(30), `email` VARCHAR(30), `telefono` INT(30), `id_ciudad` INT(30), PRIMARY KEY(`id`)) ENGINE = INNODB;
+
+CREATE TABLE `contactos` (
+  `id` int(200) NOT NULL,
+  `foto` longblob NOT NULL,
+  `nombre` varchar(30) DEFAULT NULL,
+  `apellido` varchar(30) DEFAULT NULL,
+  `cargo` varchar(30) DEFAULT NULL,
+  `email` varchar(30) DEFAULT NULL,
+  `compañia` varchar(30) DEFAULT NULL,
+  `id_region` INT(30) DEFAULT NULL,
+  `id_pais` INT(30) DEFAULT NULL,
+  `id_ciudad` INT(30) DEFAULT NULL,
+  `dirección` varchar(30) DEFAULT NULL,
+  `interés` varchar(30) DEFAULT NULL,
+  `id_canal_contacto` INT(30) DEFAULT NULL,
+  `cuenta_usuario` varchar(30) DEFAULT NULL,
+  `preferencias` varchar(30) DEFAULT NULL, 
+    PRIMARY KEY(`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `canales_contacto` (`id` int(200) NOT NULL, `canal` varchar(30) DEFAULT NULL, PRIMARY KEY(`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE `ciudades`
+  ADD KEY `id_pais` (`id_pais`),
+  ADD KEY `id_region` (`id_region`);
+
+ALTER TABLE `paises`
+  ADD KEY `id_region` (`id_region`);
+ 
+ALTER TABLE `contactos`
+  ADD KEY `id_region` (`id_region`),
+  ADD KEY `id_pais` (`id_pais`),
+  ADD KEY `id_canal_contacto` (`id_canal_contacto`),
+  ADD KEY `id_ciudad` (`id_ciudad`);
+
+ALTER TABLE `compañías`
+  ADD KEY `id_ciudad` (`id_ciudad`);

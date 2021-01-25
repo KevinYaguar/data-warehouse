@@ -1,0 +1,24 @@
+const Sequelize = require('sequelize');
+const db_data = require('../db_connection_data');
+const sequelize = new Sequelize(
+    db_data.conf_db_name,
+    db_data.conf_user,
+    db_data.conf_password, {
+        host: db_data.conf_db_host,
+        dialect: 'mysql',
+        port: db_data.conf_port,
+        dialectOptions: {
+            multipleStatements: true
+        }
+});
+
+async function insertUser (nombre, apellido, email, perfil, password){
+    let result = sequelize.query('INSERT INTO usuarios (usuario_id, nombre, Apellido, email, perfil, password) VALUES (?, ?, ?, ?, ?, ?)', {
+        replacements: ['NULL', nombre, apellido, email, perfil, password]
+    })
+    return result;
+}
+
+module.exports = {
+    insertUser
+}
