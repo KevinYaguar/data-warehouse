@@ -12,7 +12,11 @@ const sequelize = new Sequelize(
         }
 });
 
-const {search_user} = require('./Users-Functions')
+const jwt = require('jsonwebtoken');
+
+const jwtClave = process.env.CLAVE;
+
+const {search_user} = require('../Users/Users-Functions')
 
 const data_request = (req, res, next) => {
     let{email, password} = req.body;
@@ -59,8 +63,29 @@ const user_pass = (req, res, next) => {
         })
 }
 
+const check_rol = (req, res, next) => {
+    let token = (req.headers.authorization).split(' ')[1];
+    let decodificado = jwt.verify(token, jwtClave)
+    const user = decodificado.email;
+    search_user(user)
+        .then(response => {
+            let u = response.find(u => u.email === user);
+            if(u.perfil === 'Admin'){
+                next();
+            } else {
+                res.status(403).send({
+                    status:'NOT ALLOWED',
+                    messege: 'You need to be Admin to do this'
+                })
+            }
+        })
+
+
+}
+
 module.exports = {
     data_request,
     if_user_exist_next,
-    user_pass
+    user_pass,
+    check_rol
 }

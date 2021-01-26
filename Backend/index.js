@@ -11,11 +11,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const {insertUser, search_user} = require('./Users/Users-Functions');
+const {insertUser, search_user, get_users_list} = require('./Users/Users-Functions');
 
-const {data_request, if_user_exist_next, user_pass} = require('./Users/User-Middlewares')
+const {data_request, if_user_exist_next, user_pass, check_rol} = require('./Users/User-Middlewares')
 
-app.post('/create_user', (req, res)=>{
+app.post('/create_user', check_rol, (req, res)=>{
     let {nombre, apellido, email, perfil, password} = req.body;
 
     insertUser(nombre, apellido, email, perfil, password)
@@ -49,12 +49,19 @@ app.get('/user_info', (req, res) => {
         })
 })
 
+app.get('/users_list', check_rol, (req, res)=>{
+    get_users_list()
+        .then(response => {
+            res.status(200).send(response)
+        })
+})
+
 
 app.listen(process.env.SERVER_PORT, (req, res) => {
     console.log(`Servidor corriendo en el puerto ${process.env.SERVER_PORT}`)
 })
 
-app.use((req, res, next, err) =>{
+app.use((err, req, res, next) =>{
     if(!err){
         next();
     } else{
@@ -63,5 +70,6 @@ app.use((req, res, next, err) =>{
             error:500,
             mensaje:'Ah ocurrido un error inesperado!'
         })
+        
     }
 })

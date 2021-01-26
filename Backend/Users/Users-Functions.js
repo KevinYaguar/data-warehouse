@@ -26,7 +26,15 @@ async function search_user(email) {
     return result;
 }
 
+async function get_users_list (){
+    let result = sequelize.query(`SELECT * FROM usuarios`, {
+        type: sequelize.QueryTypes.SELECT
+    })
+    return result;
+}
+
 module.exports = {
     insertUser,
-    search_user
+    search_user,
+    get_users_list
 }
