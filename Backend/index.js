@@ -13,7 +13,7 @@ app.use(express.json());
 
 const {insertUser, search_user} = require('./Users/Users-Functions');
 
-const {data_request, if_user_exist_next} = require('./Users/User-Middlewares')
+const {data_request, if_user_exist_next, user_pass} = require('./Users/User-Middlewares')
 
 app.post('/create_user', (req, res)=>{
     let {nombre, apellido, email, perfil, password} = req.body;
@@ -27,7 +27,7 @@ app.post('/create_user', (req, res)=>{
         }).catch(e=> console.log(e))
 })
 
-app.post('/login', data_request, if_user_exist_next, (req, res)=>{
+app.post('/login', data_request, if_user_exist_next, user_pass, (req, res)=>{
     let {email} = req.body;
     
     let token = jwt.sign({email: email}, jwtClave);

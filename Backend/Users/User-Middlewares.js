@@ -31,7 +31,7 @@ const if_user_exist_next = (req, res, next) => {
     let {email} = req.body;
     search_user(email)
         .then(response => {
-            let user = response.find(u => u.Email === email)
+            let user = response.find(u => u.email === email)
             if(user){
                 return next();
             }else{
@@ -43,7 +43,24 @@ const if_user_exist_next = (req, res, next) => {
         })
 }
 
+const user_pass = (req, res, next) => {
+    let {email, password} = req.body;
+    search_user(email)
+        .then(response => {
+            let user = response.find(u => u.email === email)
+            if(user.password === password){
+                next();
+            }else{
+                res.status(403).send({
+                    status:'403 FORBIDDEN',
+                    messege:'Password incorrect'
+                })
+            }
+        })
+}
+
 module.exports = {
     data_request,
-    if_user_exist_next
+    if_user_exist_next,
+    user_pass
 }

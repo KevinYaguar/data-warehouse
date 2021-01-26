@@ -13,7 +13,7 @@ const sequelize = new Sequelize(
 });
 
 async function insertUser (nombre, apellido, email, perfil, password){
-    let result = sequelize.query('INSERT INTO usuarios (usuario_id, nombre, Apellido, email, perfil, password) VALUES (?, ?, ?, ?, ?, ?)', {
+    let result = sequelize.query('INSERT INTO usuarios (usuario_id, nombre, apellido, email, perfil, password) VALUES (?, ?, ?, ?, ?, ?)', {
         replacements: ['NULL', nombre, apellido, email, perfil, password]
     })
     return result;

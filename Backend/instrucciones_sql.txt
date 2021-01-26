@@ -1,7 +1,7 @@
 CREATE DATABASE data_warehouse;
 USE data_warehouse;
 
-CREATE TABLE `data_warehouse`. `usuarios`(`usuario_id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30) NOT NULL , `apellido` VARCHAR(30) NOT NULL , `Email` VARCHAR(30) NOT NULL , `Perfil` enum('Admin', 'Básico') NOT NULL, `password` VARCHAR(30) NOT NULL, PRIMARY KEY (`usuario_id`)) ENGINE = INNODB;
+CREATE TABLE `data_warehouse`. `usuarios`(`usuario_id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30) NOT NULL , `apellido` VARCHAR(30) NOT NULL , `email` VARCHAR(30) NOT NULL , `perfil` enum('Admin', 'Basico') NOT NULL, `password` VARCHAR(30) NOT NULL, PRIMARY KEY (`usuario_id`)) ENGINE = INNODB;
 
 CREATE TABLE `data_warehouse`.`regiones`(`id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30), PRIMARY KEY(`id`)) ENGINE = INNODB;
 
@@ -47,3 +47,5 @@ ALTER TABLE `contactos`
 
 ALTER TABLE `compañías`
   ADD KEY `id_ciudad` (`id_ciudad`);
+
+INSERT INTO `usuarios` (`usuario_id`, `nombre`, `apellido`, `email`, `perfil`, `password`) VALUES ('NULL', 'Administrador', 'Administrador', 'Administrador@gmail.com', 'Admin', 'password')
