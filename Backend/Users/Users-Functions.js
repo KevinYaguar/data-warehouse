@@ -39,9 +39,16 @@ async function update_user (user, field, new_value) {
     return result;
 }
 
+async function delete_user(user) {
+    let result = sequelize.query(`DELETE FROM usuarios WHERE email = ?`, {replacements: [user]})
+
+    return result;
+}
+
 module.exports = {
     insertUser,
     search_user,
     get_users_list,
-    update_user
+    update_user,
+    delete_user
 }

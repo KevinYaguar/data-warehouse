@@ -11,7 +11,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const {insertUser, search_user, get_users_list, update_user} = require('./Users/Users-Functions');
+const {insertUser, search_user, get_users_list, update_user, delete_user} = require('./Users/Users-Functions');
 
 const {data_request, if_user_exist_next, user_pass, check_rol} = require('./Users/User-Middlewares')
 
@@ -69,7 +69,16 @@ app.put('/alter_user', check_rol, if_user_exist_next, (req, res) => {
         })
 })
 
-
+app.delete('/delete_user', check_rol, if_user_exist_next, (req, res)=>{
+    let {email} = req.body;
+    delete_user(email)
+        .then(response => {
+            res.status(200).send({
+                status:200,
+                messege:'User deleted succesfully'
+            })
+        })
+})
 
 ///////////////////////////////////
 app.listen(process.env.SERVER_PORT, (req, res) => {
