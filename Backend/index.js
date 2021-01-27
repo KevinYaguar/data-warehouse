@@ -11,9 +11,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const {insertUser, search_user, get_users_list, update_user, delete_user} = require('./Users/Users-Functions');
+const {insertUser, search_user, get_users_list, update_user, delete_user, inser_region, get_all_regions} = require('./Users/Users-Functions');
 
-const {data_request, if_user_exist_next, user_pass, check_rol} = require('./Users/User-Middlewares')
+const {data_request, if_user_exist_next, user_pass, check_rol} = require('./Users/User-Middlewares');
+const { response } = require('express');
 
 app.use(expressjwt({secret: jwtClave, algorithms:['sha1', 'RS256', 'HS256']}).unless({ path: ['/login']}));
 
@@ -64,7 +65,7 @@ app.put('/alter_user', check_rol, if_user_exist_next, (req, res) => {
         .then(response => {
             res.status(200).send({
                 status:200,
-                messege: 'User Updated succesfully'
+                messege: 'User Updated successfully'
             })
         })
 })
@@ -79,6 +80,27 @@ app.delete('/delete_user', check_rol, if_user_exist_next, (req, res)=>{
             })
         })
 })
+
+////////////////////////////// REGION CIUDAD ////////////////////////////
+
+app.post('/inser_region', (req, res) => {
+    let {region} = req.body;
+    inser_region(region)
+        .then(response => {
+            res.status(200).send({
+                status:'OK', 
+                messege: 'Region added successfully'
+            })
+        })
+})
+
+app.get('/regions', (req, res) => {
+    get_all_regions()
+        .then(response => {
+            res.status(200).send(response)
+        })
+})
+
 
 ///////////////////////////////////
 app.listen(process.env.SERVER_PORT, (req, res) => {
