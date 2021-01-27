@@ -33,8 +33,15 @@ async function get_users_list (){
     return result;
 }
 
+async function update_user (user, field, new_value) {
+    let result = sequelize.query(`UPDATE usuarios SET ${field} = ? WHERE email = ?`, {replacements: [ new_value, user]})
+
+    return result;
+}
+
 module.exports = {
     insertUser,
     search_user,
-    get_users_list
+    get_users_list,
+    update_user
 }

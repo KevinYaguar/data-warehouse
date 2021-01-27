@@ -41,7 +41,7 @@ const if_user_exist_next = (req, res, next) => {
             }else{
                 res.status(404).send({
                     status:'404',
-                    messege:'User  not found'
+                    messege:'User not found'
                 })
             }
         })
