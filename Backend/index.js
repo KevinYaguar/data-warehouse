@@ -11,10 +11,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const {insertUser, search_user, get_users_list, update_user, delete_user, inser_region, get_all_regions} = require('./Users/Users-Functions');
+const {insertUser, search_user, get_users_list, update_user, delete_user} = require('./Users/Users-Functions');
 
 const {data_request, if_user_exist_next, user_pass, check_rol} = require('./Users/User-Middlewares');
-const { response } = require('express');
+
+const { inser_region, get_all_regions, inser_country, get_all_countries, insert_city, get_all_cities} = require('./Regions/Regions-Functions')
 
 app.use(expressjwt({secret: jwtClave, algorithms:['sha1', 'RS256', 'HS256']}).unless({ path: ['/login']}));
 
@@ -83,7 +84,7 @@ app.delete('/delete_user', check_rol, if_user_exist_next, (req, res)=>{
 
 ////////////////////////////// REGION CIUDAD ////////////////////////////
 
-app.post('/inser_region', (req, res) => {
+app.post('/inser_region', check_rol, (req, res) => {
     let {region} = req.body;
     inser_region(region)
         .then(response => {
@@ -94,13 +95,48 @@ app.post('/inser_region', (req, res) => {
         })
 })
 
-app.get('/regions', (req, res) => {
+app.get('/regions', check_rol, (req, res) => {
     get_all_regions()
         .then(response => {
             res.status(200).send(response)
         })
 })
 
+app.post('/inser_country', check_rol, (req, res) => {
+    let {country, id_region} = req.body;
+    inser_country(country, id_region)
+        .then(response => {
+            res.status(200).send({
+                status:'OK', 
+                messege: 'Country added successfully'
+            })
+        })
+})
+
+app.get('/countries', check_rol, (req, res) => {
+    get_all_countries()
+        .then(response => {
+            res.status(200).send(response)
+        })
+})
+
+app.post('/insert_city', check_rol, (req, res) => {
+    let {nombre, id_region, id_pais} = req.body;
+    insert_city(nombre, id_region, id_pais)
+        .then(response => {
+            res.status(200).send({
+                status: 200,
+                messege:'City added successfully'
+            })
+        })
+})
+
+app.get('/cities', check_rol, (req, res) => {
+    get_all_cities()
+        .then(response => {
+            res.status(200).send(response)
+        })
+})
 
 ///////////////////////////////////
 app.listen(process.env.SERVER_PORT, (req, res) => {

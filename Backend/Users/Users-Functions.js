@@ -45,17 +45,6 @@ async function delete_user(user) {
     return result;
 }
 
-async function inser_region(region) {
-    let result = sequelize.query(`INSERT INTO REGIONES (id, nombre) VALUES ('NULL', ?)`, {replacements: [region]})
-
-    return result;
-}
-
-async function get_all_regions () {
-    let result = sequelize.query(`SELECT * FROM REGIONES`, {type: sequelize.QueryTypes.SELECT})
-
-    return result;
-}
 
 module.exports = {
     insertUser,
@@ -63,6 +52,5 @@ module.exports = {
     get_users_list,
     update_user,
     delete_user,
-    inser_region,
-    get_all_regions
+    
 }
