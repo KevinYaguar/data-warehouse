@@ -50,11 +50,25 @@ async function get_all_cities() {
     return result;
 }
 
+async function get_cities_from(id, places, place) {
+    let result = sequelize.query(`SELECT ciudades.nombre FROM ciudades JOIN ${places} ON 
+    ${places}.id = ciudades.id_${place} WHERE ${places}.id = ${id}`, {type: sequelize.QueryTypes.SELECT})
+
+    return result;
+}
+/*
+`SELECT ciudades.nombre, regiones.nombre FROM `ciudades` JOIN `regiones` ON 
+regiones.id = ciudades.id_region WHERE regiones.id = 3`
+
+`SELECT ciudades.nombre, paises.nombre FROM `ciudades` JOIN `paises` ON paises.id = ciudades.id_pais WHERE paises.id = 3 `
+*/
+
 module.exports = {
     inser_region,
     get_all_regions,
     inser_country,
     get_all_countries,
     insert_city,
-    get_all_cities
+    get_all_cities,
+    get_cities_from
 }

@@ -15,7 +15,8 @@ const {insertUser, search_user, get_users_list, update_user, delete_user} = requ
 
 const {data_request, if_user_exist_next, user_pass, check_rol} = require('./Users/User-Middlewares');
 
-const { inser_region, get_all_regions, inser_country, get_all_countries, insert_city, get_all_cities} = require('./Regions/Regions-Functions')
+const { inser_region, get_all_regions, inser_country, get_all_countries, insert_city, get_all_cities, get_cities_from} = require('./Regions/Regions-Functions');
+const { response } = require('express');
 
 app.use(expressjwt({secret: jwtClave, algorithms:['sha1', 'RS256', 'HS256']}).unless({ path: ['/login']}));
 
@@ -132,11 +133,27 @@ app.post('/insert_city', check_rol, (req, res) => {
 })
 
 app.get('/cities', check_rol, (req, res) => {
-    get_all_cities()
-        .then(response => {
-            res.status(200).send(response)
-        })
+    let id_region = req.query.id_region;
+    let id_pais = req.query.id_pais;
+    if(id_region){
+        get_cities_from(id_region, 'regiones', 'region')
+            .then(response=> {
+                res.status(200).send(response)
+            })
+    } else if(id_pais){
+        get_cities_from(id_pais, 'paises', 'pais')
+            .then(response=> {
+                res.status(200).send(response)
+            })
+    } else{
+        get_all_cities()
+            .then(response => {
+                res.status(200).send(response)
+            })
+    }
 })
+
+
 
 ///////////////////////////////////
 app.listen(process.env.SERVER_PORT, (req, res) => {
