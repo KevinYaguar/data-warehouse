@@ -15,9 +15,9 @@ const {insertUser, search_user, get_users_list, update_user, delete_user} = requ
 
 const {data_request, if_user_exist_next, user_pass, check_rol} = require('./Users/User-Middlewares');
 
-const { get_cities_from,insert_place, get_all_places} = require('./Regions/Regions-Functions');
+const { get_cities_from, insert_place, get_all_places, delete_place, update_place} = require('./Regions/Regions-Functions');
 
-const {if_exits_reject, region_exists_next, country_exists_next} = require('./Regions/Regions-Middlewares')
+const {if_exits_reject, region_exists_next, country_exists_next, data_request_places} = require('./Regions/Regions-Middlewares')
 
 app.use(expressjwt({secret: jwtClave, algorithms:['sha1', 'RS256', 'HS256']}).unless({ path: ['/login']}));
 
@@ -84,15 +84,15 @@ app.delete('/delete_user', check_rol, if_user_exist_next, (req, res)=>{
         })
 })
 
-////////////////////////////// REGION CIUDAD ////////////////////////////
+////////////////////////////// REGIONES, PAISES Y CIUDADES////////////////////////////
 
-app.post('/inser_region', check_rol, if_exits_reject, (req, res) => {
-    let {region} = req.body;
-        insert_place('REGIONES', region)
+app.post('/insert_place', check_rol, if_exits_reject, data_request_places, region_exists_next, country_exists_next, (req, res) => {
+    let {place, tabla, id_region, id_pais} = req.body;
+    insert_place(tabla, place, id_region, id_pais)
             .then(response => {
                 res.status(200).send({
                 status:'OK', 
-                messege: `${region} added successfully`
+                messege: `${place} added successfully`
                 })
             })
 })
@@ -104,33 +104,11 @@ app.get('/regions', check_rol, (req, res) => {
         })
 })
 
-app.post('/inser_country', check_rol, if_exits_reject, region_exists_next, (req, res) => {
-    let {country, id_region} = req.body;
-    insert_place('PAISES', country, id_region)
-            .then(response => {
-                res.status(200).send({
-                status:'OK', 
-                messege: `${country} added successfully`
-                })
-            })
-})
-
 app.get('/countries', check_rol, (req, res) => {
     get_all_places('PAISES')
         .then(response => {
             res.status(200).send(response)
         })
-})
-
-app.post('/insert_city', check_rol, if_exits_reject, region_exists_next, country_exists_next, (req, res) => {
-    let {city, id_region, id_pais} = req.body;
-    insert_place('CIUDADES', city, id_region, id_pais)
-            .then(response => {
-                res.status(200).send({
-                status:'OK', 
-                messege: `${city} added successfully`
-                })
-            })
 })
 
 app.get('/cities', check_rol, (req, res) => {
@@ -154,6 +132,30 @@ app.get('/cities', check_rol, (req, res) => {
     }
 })
 
+
+app.delete('/delete_places', check_rol, (req, res) => {
+    let {id, table} = req.body;
+
+    delete_place(id, table)
+        .then(response=> {
+            res.status(200).send({
+                status: 200,
+                messege: `Deleted successfully`
+            })
+        })
+})
+
+app.put('/update_place', (req, res) => {
+    let {id, table, field, new_value} = req.body;
+
+    update_place(id, table, field, new_value)
+        .then(response => {
+            res.status(200).send({
+                status:200,
+                messege: 'Updated successfully'
+            })
+        })
+})
 
 
 ///////////////////////////////////

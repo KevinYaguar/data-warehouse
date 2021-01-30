@@ -20,7 +20,8 @@ async function get_place (nombre, places, column) {
 
 const region_exists_next = (req, res, next) => {
     let {id_region} = req.body;
-    sequelize.query(`SELECT * FROM REGIONES WHERE id = ${id_region}`, {type: sequelize.QueryTypes.SELECT})
+    if(id_region){
+        sequelize.query(`SELECT * FROM REGIONES WHERE id = ${id_region}`, {type: sequelize.QueryTypes.SELECT})
         .then(response => {
             console.log(response)
             if(response.length === 0){
@@ -32,11 +33,40 @@ const region_exists_next = (req, res, next) => {
                 next();
             }
         })
+    } else{
+        next();
+    }
 }
+
+const data_request_places = (req, res, next) => {
+    let {id_pais, id_region, place, tabla} = req.body;
+    if(tabla === 'PAISES'){
+        if(id_region && id_region > 0){
+            next();
+        } else{
+            res.status(401).send({
+                status: 401,
+                messege:'Bad Request1'
+            })
+        }
+    } else if(tabla === 'CIUDADES'){
+        if(id_pais && id_region > 0){
+            next();
+        } else{
+            res.status(401).send({
+                status: 401,
+                messege:'Bad Request2'
+            })
+        }
+    }
+}
+
+
 
 const country_exists_next = (req, res, next) => {
     let {id_pais} = req.body;
-    sequelize.query(`SELECT * FROM PAISES WHERE id = ${id_pais}`, {type: sequelize.QueryTypes.SELECT})
+    if(id_pais){
+        sequelize.query(`SELECT * FROM PAISES WHERE id = ${id_pais}`, {type: sequelize.QueryTypes.SELECT})
         .then(response => {
             console.log(response)
             if(response.length === 0){
@@ -48,54 +78,44 @@ const country_exists_next = (req, res, next) => {
                 next();
             }
         })
+    } else{
+        next();
+    }
+    
+}
+
+function get_column(tabla) {
+    if(tabla === 'REGIONES'){
+        return 'region'
+    } else if(tabla === 'PAISES'){
+        return 'pais'
+    } else if(tabla === 'CIUDADES'){
+        return 'ciudad'
+    } 
 }
 
 const if_exits_reject = (req, res, next) => {
-    let {region} = req.body;
-    let {country} = req.body;
-    let {city} = req.body;
 
-    if(region){
-        get_place(region, 'REGIONES', 'region') 
+    let{place, tabla} = req.body;
+    
+    let column = get_column(tabla)
+
+    get_place(place, tabla, column) 
         .then(response=>{
             if(response.length === 0){
                 next();
             } else {
                 res.status(400).send({
                     status: 400, 
-                    messege: `${region} already exists`
+                    messege: `${place} already exists`
                 })
             }
         })
-    } else if(country){
-        get_place(country, 'PAISES', 'pais') 
-        .then(response=>{
-            if(response.length === 0){
-                next();
-            } else {
-                res.status(400).send({
-                    status: 400, 
-                    messege: `${country} already exists`
-                })
-            }
-        })
-    }else if(city){
-        get_place(city, 'CIUDADES', 'ciudad') 
-        .then(response=>{
-            if(response.length === 0){
-                next();
-            } else {
-                res.status(400).send({
-                    status: 400, 
-                    messege: `${city} already exists`
-                })
-            }
-        })
-    }
 }
 
 module.exports = {
     if_exits_reject,
     region_exists_next,
-    country_exists_next
+    country_exists_next,
+    data_request_places
 }
