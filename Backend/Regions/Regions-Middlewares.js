@@ -113,9 +113,22 @@ const if_exits_reject = (req, res, next) => {
         })
 }
 
+const check_table = (req, res, next) => {
+    let {tabla} = req.body;
+    if(tabla === 'REGIONES' || tabla === 'PAISES' || tabla === 'CIUDADES'){
+        next();
+    } else {
+        res.status(401).send({
+            status:401,
+            messege:'/tabla/ only admits REGIONES or PAISES or CIUDADES'
+        })
+    }
+}
+
 module.exports = {
     if_exits_reject,
     region_exists_next,
     country_exists_next,
-    data_request_places
+    data_request_places,
+    check_table
 }

@@ -11,13 +11,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+//////////////////////////////////////////////////IMPORTACIONES //////////////////////////////////////////////////////
+///////USUARIOS//////////////////////////////
 const {insertUser, search_user, get_users_list, update_user, delete_user} = require('./Users/Users-Functions');
-
 const {data_request, if_user_exist_next, user_pass, check_rol} = require('./Users/User-Middlewares');
-
+////////////////////////////////////////////
+///////REGIONES, CIUDADES, PAISES////////////
 const { get_cities_from, insert_place, get_all_places, delete_place, update_place} = require('./Regions/Regions-Functions');
-
-const {if_exits_reject, region_exists_next, country_exists_next, data_request_places} = require('./Regions/Regions-Middlewares')
+const {if_exits_reject, region_exists_next, country_exists_next, data_request_places, check_table} = require('./Regions/Regions-Middlewares')
+/////////////////////////////////////////////
+///////COMPAÑIAS/////////////////////////////
+const {insert_company} = require('./Companies/Companies-Functions')
+//////////////////////////////////////////////
 
 app.use(expressjwt({secret: jwtClave, algorithms:['sha1', 'RS256', 'HS256']}).unless({ path: ['/login']}));
 
@@ -86,7 +91,7 @@ app.delete('/delete_user', check_rol, if_user_exist_next, (req, res)=>{
 
 ////////////////////////////// REGIONES, PAISES Y CIUDADES////////////////////////////
 
-app.post('/insert_place', check_rol, if_exits_reject, data_request_places, region_exists_next, country_exists_next, (req, res) => {
+app.post('/insert_place', check_rol, check_table, data_request_places, if_exits_reject,  region_exists_next, country_exists_next, (req, res) => {
     let {place, tabla, id_region, id_pais} = req.body;
     insert_place(tabla, place, id_region, id_pais)
             .then(response => {
@@ -132,7 +137,6 @@ app.get('/cities', check_rol, (req, res) => {
     }
 })
 
-
 app.delete('/delete_places', check_rol, (req, res) => {
     let {id, table} = req.body;
 
@@ -156,6 +160,20 @@ app.put('/update_place', (req, res) => {
             })
         })
 })
+//////////////////////////////////////    COMPAÑIAS     ///////////////////////////////////////
+
+app.post('/insert_company', check_rol, (req, res) => {
+    
+    let {nombre, direccion, telefono, email, id_ciudad} = req.body;
+    insert_company(nombre, direccion, telefono, email, id_ciudad)
+        .then(response => {
+            res.status(200).send({
+                status:200,
+                messege:'Company inserted to database'
+            })
+        })
+})
+
 
 
 ///////////////////////////////////
