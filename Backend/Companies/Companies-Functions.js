@@ -12,9 +12,9 @@ const sequelize = new Sequelize(
         }
 });
 
-async function insert_company(nombre, direccion, telefono, email, id_ciudad){
+async function insert_company(name, adress, telephone, email, id_city){
     
-    let result = sequelize.query(`INSERT INTO COMPAÑÍAS (id, nombre, dirección, telefono, email, id_ciudad) VALUES ("NULL", ?, ?, ?, ?, ?)`, {replacements: [nombre, direccion, telefono, email, id_ciudad]})
+    let result = sequelize.query(`INSERT INTO COMPANIES (id, name, adress, telephone, email, id_city) VALUES ("NULL", ?, ?, ?, ?, ?)`, {replacements: [name, adress, telephone, email, id_city]})
     return result;
 }
 

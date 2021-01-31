@@ -47,6 +47,22 @@ const if_user_exist_next = (req, res, next) => {
         })
 }
 
+const if_user_exist_reject = (req, res, next) => {
+    let {email} = req.body;
+    search_user(email)
+        .then(response => {
+            let user = response.find(u => u.email === email)
+            if(user){
+                res.status(404).send({
+                    status:'404',
+                    messege:'User already exist'
+                })
+            }else{
+                return next();
+            }
+        })
+}
+
 const user_pass = (req, res, next) => {
     let {email, password} = req.body;
     search_user(email)
@@ -70,7 +86,8 @@ const check_rol = (req, res, next) => {
     search_user(user)
         .then(response => {
             let u = response.find(u => u.email === user);
-            if(u.perfil === 'Admin'){
+            
+            if(u.rol === 'Admin'){
                 next();
             } else {
                 res.status(403).send({
@@ -87,5 +104,6 @@ module.exports = {
     data_request,
     if_user_exist_next,
     user_pass,
-    check_rol
+    check_rol,
+    if_user_exist_reject
 }

@@ -12,15 +12,16 @@ const sequelize = new Sequelize(
         }
 });
 
-async function insert_place(table, place, id_region, id_pais){
-    if(table === 'REGIONES'){
-        let result = sequelize.query(`INSERT INTO REGIONES (id, region) VALUES ('NULL', ?)`, {replacements: [place]})
+async function insert_place(table, place, id_region, id_country){
+    
+    if(table === 'REGIONS'){
+        let result = sequelize.query(`INSERT INTO REGIONS (id, region) VALUES ('NULL', ?)`, {replacements: [place]})
         return result;
-    } else if(table === 'PAISES'){
-        let result = sequelize.query(`INSERT INTO PAISES (id, pais, id_region) VALUES ('NULL', ?, ?)`, {replacements: [place, id_region]})
+    } else if(table === 'COUNTRIES'){
+        let result = sequelize.query(`INSERT INTO COUNTRIES (id, country, id_region) VALUES ('NULL', ?, ?)`, {replacements: [place, id_region]})
         return result;
-    } else if(table === 'CIUDADES'){
-        let result = sequelize.query(`INSERT INTO CIUDADES (id, ciudad, id_region, id_pais) VALUES ('NULL', ?, ?, ?)`, {replacements: [place, id_region, id_pais]})
+    } else if(table === 'CITIES'){
+        let result = sequelize.query(`INSERT INTO CITIES (id, city, id_region, id_country) VALUES ('NULL', ?, ?, ?)`, {replacements: [place, id_region, id_country]})
         return result;
     }
 }
@@ -32,8 +33,8 @@ async function get_all_places(place){
 
 
 async function get_cities_from(id, places, place) {
-    let result = sequelize.query(`SELECT ciudades.id, ciudades.nombre  FROM ciudades JOIN ${places} ON 
-    ${places}.id = ciudades.id_${place} WHERE ${places}.id = ${id}`, {type: sequelize.QueryTypes.SELECT})
+    let result = sequelize.query(`SELECT CITIES.id, CITIES.city  FROM CITIES JOIN ${places} ON 
+    ${places}.id = CITIES.id_${place} WHERE ${places}.id = ${id}`, {type: sequelize.QueryTypes.SELECT})
 
     return result;
 }

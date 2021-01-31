@@ -12,35 +12,35 @@ const sequelize = new Sequelize(
         }
 });
 
-async function insertUser (nombre, apellido, email, perfil, password){
-    let result = sequelize.query('INSERT INTO usuarios (usuario_id, nombre, apellido, email, perfil, password) VALUES (?, ?, ?, ?, ?, ?)', {
-        replacements: ['NULL', nombre, apellido, email, perfil, password]
+async function insertUser (name, last_name, email, rol, password){
+    let result = sequelize.query('INSERT INTO users (user_id, name, last_name, email, rol, password) VALUES (?, ?, ?, ?, ?, ?)', {
+        replacements: ['NULL', name, last_name, email, rol, password]
     })
     return result;
 }
 
 async function search_user(email) {
-    let result = sequelize.query(`SELECT * FROM usuarios WHERE email = ?`, {
+    let result = sequelize.query(`SELECT * FROM users WHERE email = ?`, {
         replacements: [email], type: sequelize.QueryTypes.SELECT
     })
     return result;
 }
 
 async function get_users_list (){
-    let result = sequelize.query(`SELECT * FROM usuarios`, {
+    let result = sequelize.query(`SELECT * FROM users`, {
         type: sequelize.QueryTypes.SELECT
     })
     return result;
 }
 
 async function update_user (user, field, new_value) {
-    let result = sequelize.query(`UPDATE usuarios SET ${field} = ? WHERE email = ?`, {replacements: [ new_value, user]})
+    let result = sequelize.query(`UPDATE users SET ${field} = ? WHERE email = ?`, {replacements: [ new_value, user]})
 
     return result;
 }
 
 async function delete_user(user) {
-    let result = sequelize.query(`DELETE FROM usuarios WHERE email = ?`, {replacements: [user]})
+    let result = sequelize.query(`DELETE FROM users WHERE email = ?`, {replacements: [user]})
 
     return result;
 }

@@ -11,29 +11,29 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-//////////////////////////////////////////////////IMPORTACIONES //////////////////////////////////////////////////////
-///////USUARIOS//////////////////////////////
+//////////////////////////////////////////////////IMPORTS //////////////////////////////////////////////////////
+///////USERS//////////////////////////////
 const {insertUser, search_user, get_users_list, update_user, delete_user} = require('./Users/Users-Functions');
-const {data_request, if_user_exist_next, user_pass, check_rol} = require('./Users/User-Middlewares');
+const {data_request, if_user_exist_next, user_pass, check_rol, if_user_exist_reject} = require('./Users/User-Middlewares');
 ////////////////////////////////////////////
-///////REGIONES, CIUDADES, PAISES////////////
+///////REGIONS, CITIES, COUNTRIES////////////
 const { get_cities_from, insert_place, get_all_places, delete_place, update_place} = require('./Regions/Regions-Functions');
 const {if_exits_reject, region_exists_next, country_exists_next, data_request_places, check_table} = require('./Regions/Regions-Middlewares')
 /////////////////////////////////////////////
-///////COMPAÑIAS/////////////////////////////
+///////COMPANIES/////////////////////////////
 const {insert_company} = require('./Companies/Companies-Functions')
 //////////////////////////////////////////////
 
 app.use(expressjwt({secret: jwtClave, algorithms:['sha1', 'RS256', 'HS256']}).unless({ path: ['/login']}));
 
-app.post('/create_user', check_rol, (req, res)=>{
-    let {nombre, apellido, email, perfil, password} = req.body;
+app.post('/create_user', check_rol, if_user_exist_reject, (req, res)=>{
+    let {name, last_name, email, rol, password} = req.body;
 
-    insertUser(nombre, apellido, email, perfil, password)
+    insertUser(name, last_name, email, rol, password)
         .then(response => {
             res.status(200).send({
                 status:'ok', 
-                messege:'usuario agregado con exito'
+                messege:'User added successfully'
             })
         }).catch(e=> console.log(e))
 })
@@ -73,7 +73,7 @@ app.put('/alter_user', check_rol, if_user_exist_next, (req, res) => {
         .then(response => {
             res.status(200).send({
                 status:200,
-                messege: 'User Updated successfully'
+                messege: 'User updated successfully'
             })
         })
 })
@@ -89,11 +89,11 @@ app.delete('/delete_user', check_rol, if_user_exist_next, (req, res)=>{
         })
 })
 
-////////////////////////////// REGIONES, PAISES Y CIUDADES////////////////////////////
+////////////////////////////// REGIONS, COUNTRIES Y CITIES////////////////////////////
 
 app.post('/insert_place', check_rol, check_table, data_request_places, if_exits_reject,  region_exists_next, country_exists_next, (req, res) => {
-    let {place, tabla, id_region, id_pais} = req.body;
-    insert_place(tabla, place, id_region, id_pais)
+    let {place, table, id_region, id_country} = req.body;
+    insert_place(table, place, id_region, id_country)
             .then(response => {
                 res.status(200).send({
                 status:'OK', 
@@ -103,14 +103,14 @@ app.post('/insert_place', check_rol, check_table, data_request_places, if_exits_
 })
 
 app.get('/regions', check_rol, (req, res) => {
-    get_all_places('REGIONES')
+    get_all_places('REGIONS')
         .then(response => {
             res.status(200).send(response)
         })
 })
 
 app.get('/countries', check_rol, (req, res) => {
-    get_all_places('PAISES')
+    get_all_places('COUNTRIES')
         .then(response => {
             res.status(200).send(response)
         })
@@ -118,19 +118,19 @@ app.get('/countries', check_rol, (req, res) => {
 
 app.get('/cities', check_rol, (req, res) => {
     let id_region = req.query.id_region;
-    let id_pais = req.query.id_pais;
+    let id_country = req.query.id_country;
     if(id_region){
-        get_cities_from(id_region, 'regiones', 'region')
+        get_cities_from(id_region, 'regions', 'region')
             .then(response=> {
                 res.status(200).send(response)
             })
-    } else if(id_pais){
-        get_cities_from(id_pais, 'paises', 'pais')
+    } else if(id_country){
+        get_cities_from(id_country, 'countries', 'country')
             .then(response=> {
                 res.status(200).send(response)
             })
     } else{
-        get_all_places('CIUDADES')
+        get_all_places('CITIES')
         .then(response => {
             res.status(200).send(response)
         })
@@ -164,8 +164,8 @@ app.put('/update_place', (req, res) => {
 
 app.post('/insert_company', check_rol, (req, res) => {
     
-    let {nombre, direccion, telefono, email, id_ciudad} = req.body;
-    insert_company(nombre, direccion, telefono, email, id_ciudad)
+    let {name, adress, telephone, email, id_city} = req.body;
+    insert_company(name, adress, telephone, email, id_city)
         .then(response => {
             res.status(200).send({
                 status:200,
@@ -178,7 +178,7 @@ app.post('/insert_company', check_rol, (req, res) => {
 
 ///////////////////////////////////
 app.listen(process.env.SERVER_PORT, (req, res) => {
-    console.log(`Servidor corriendo en el puerto ${process.env.SERVER_PORT}`)
+    console.log(`Server running on the port ${process.env.SERVER_PORT}`)
 })
 
 app.use((err, req, res, next) =>{
@@ -188,7 +188,7 @@ app.use((err, req, res, next) =>{
         console.log(JSON.stringify(err));
         res.status(500).send({
             error:500,
-            mensaje:'Ah ocurrido un error inesperado!'
+            mensaje:'An unexpected error has ocurred!'
         })
         
     }

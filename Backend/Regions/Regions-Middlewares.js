@@ -21,7 +21,7 @@ async function get_place (nombre, places, column) {
 const region_exists_next = (req, res, next) => {
     let {id_region} = req.body;
     if(id_region){
-        sequelize.query(`SELECT * FROM REGIONES WHERE id = ${id_region}`, {type: sequelize.QueryTypes.SELECT})
+        sequelize.query(`SELECT * FROM REGIONS WHERE id = ${id_region}`, {type: sequelize.QueryTypes.SELECT})
         .then(response => {
             console.log(response)
             if(response.length === 0){
@@ -39,34 +39,36 @@ const region_exists_next = (req, res, next) => {
 }
 
 const data_request_places = (req, res, next) => {
-    let {id_pais, id_region, place, tabla} = req.body;
-    if(tabla === 'PAISES'){
+    let {id_country, id_region, table} = req.body;
+    if(table === 'COUNTRIES'){
         if(id_region && id_region > 0){
             next();
         } else{
             res.status(401).send({
                 status: 401,
-                messege:'Bad Request1'
+                messege:'You need id_region > 0 to insert a country'
             })
         }
-    } else if(tabla === 'CIUDADES'){
-        if(id_pais && id_region > 0){
+    } else if(table === 'CITIES'){
+        if(id_country && id_region > 0){
             next();
         } else{
             res.status(401).send({
                 status: 401,
-                messege:'Bad Request2'
+                messege:'You need id_country > 0 to insert a city'
             })
         }
-    }
+    } else if(table === 'REGIONS'){
+        next();
+    } 
 }
 
 
 
 const country_exists_next = (req, res, next) => {
-    let {id_pais} = req.body;
-    if(id_pais){
-        sequelize.query(`SELECT * FROM PAISES WHERE id = ${id_pais}`, {type: sequelize.QueryTypes.SELECT})
+    let {id_country} = req.body;
+    if(id_country){
+        sequelize.query(`SELECT * FROM COUNTRIES WHERE id = ${id_country}`, {type: sequelize.QueryTypes.SELECT})
         .then(response => {
             console.log(response)
             if(response.length === 0){
@@ -84,23 +86,23 @@ const country_exists_next = (req, res, next) => {
     
 }
 
-function get_column(tabla) {
-    if(tabla === 'REGIONES'){
+function get_column(table) {
+    if(table === 'REGIONS'){
         return 'region'
-    } else if(tabla === 'PAISES'){
-        return 'pais'
-    } else if(tabla === 'CIUDADES'){
-        return 'ciudad'
+    } else if(table === 'COUNTRIES'){
+        return 'country'
+    } else if(table === 'CITIES'){
+        return 'city'
     } 
 }
 
 const if_exits_reject = (req, res, next) => {
 
-    let{place, tabla} = req.body;
+    let{place, table} = req.body;
     
-    let column = get_column(tabla)
+    let column = get_column(table)
 
-    get_place(place, tabla, column) 
+    get_place(place, table, column) 
         .then(response=>{
             if(response.length === 0){
                 next();
@@ -114,13 +116,13 @@ const if_exits_reject = (req, res, next) => {
 }
 
 const check_table = (req, res, next) => {
-    let {tabla} = req.body;
-    if(tabla === 'REGIONES' || tabla === 'PAISES' || tabla === 'CIUDADES'){
+    let {table} = req.body;
+    if(table === 'REGIONS' || table === 'COUNTRIES' || table === 'CITIES'){
         next();
     } else {
         res.status(401).send({
             status:401,
-            messege:'/tabla/ only admits REGIONES or PAISES or CIUDADES'
+            messege:'/table/ only admits REGIONS or COUNTRIES or CITIES'
         })
     }
 }

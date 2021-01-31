@@ -1,51 +1,51 @@
 CREATE DATABASE data_warehouse;
 USE data_warehouse;
 
-CREATE TABLE `data_warehouse`. `usuarios`(`usuario_id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30) NOT NULL , `apellido` VARCHAR(30) NOT NULL , `email` VARCHAR(30) NOT NULL , `perfil` enum('Admin', 'Basico') NOT NULL, `password` VARCHAR(30) NOT NULL, PRIMARY KEY (`usuario_id`)) ENGINE = INNODB;
+CREATE TABLE `data_warehouse`. `users`(`user_id` INT(200) NOT NULL AUTO_INCREMENT , `name` VARCHAR(30) NOT NULL , `last_name` VARCHAR(30) NOT NULL , `email` VARCHAR(30) NOT NULL , `rol` enum('Admin', 'Basic') NOT NULL, `password` VARCHAR(30) NOT NULL, PRIMARY KEY (`user_id`)) ENGINE = INNODB;
 
-CREATE TABLE `data_warehouse`.`regiones`(`id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30), PRIMARY KEY(`id`)) ENGINE = INNODB;
+CREATE TABLE `data_warehouse`.`regions`(`id` INT(200) NOT NULL AUTO_INCREMENT , `region` VARCHAR(30), PRIMARY KEY(`id`)) ENGINE = INNODB;
 
-CREATE TABLE `data_warehouse`.`paises`(`id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30), `id_region` INT(200), PRIMARY KEY(`id`)) ENGINE = INNODB;
+CREATE TABLE `data_warehouse`.`countries`(`id` INT(200) NOT NULL AUTO_INCREMENT , `country` VARCHAR(30), `id_region` INT(200), PRIMARY KEY(`id`)) ENGINE = INNODB;
 
-CREATE TABLE `data_warehouse`.`ciudades`(`id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30), `id_region` INT(200), `id_pais` INT(200), PRIMARY KEY(`id`)) ENGINE = INNODB;
+CREATE TABLE `data_warehouse`.`cities`(`id` INT(200) NOT NULL AUTO_INCREMENT , `city` VARCHAR(30), `id_region` INT(200), `id_country` INT(200), PRIMARY KEY(`id`)) ENGINE = INNODB;
 
-CREATE TABLE `data_warehouse`.`compañías`(`id` INT(200) NOT NULL AUTO_INCREMENT , `nombre` VARCHAR(30), `dirección` VARCHAR(30), `email` VARCHAR(30), `telefono` INT(30), `id_ciudad` INT(30), PRIMARY KEY(`id`)) ENGINE = INNODB;
+CREATE TABLE `data_warehouse`.`companies`(`id` INT(200) NOT NULL AUTO_INCREMENT , `name` VARCHAR(30), `adress` VARCHAR(30), `email` VARCHAR(30), `telephone` INT(30), `id_city` INT(30), PRIMARY KEY(`id`)) ENGINE = INNODB;
 
-CREATE TABLE `contactos` (
+CREATE TABLE `contacts` (
   `id` int(200) NOT NULL,
-  `foto` longblob NOT NULL,
-  `nombre` varchar(30) DEFAULT NULL,
-  `apellido` varchar(30) DEFAULT NULL,
-  `cargo` varchar(30) DEFAULT NULL,
+  `photo` longblob NOT NULL,
+  `name` varchar(30) DEFAULT NULL,
+  `last_name` varchar(30) DEFAULT NULL,
+  `position` varchar(30) DEFAULT NULL,
   `email` varchar(30) DEFAULT NULL,
-  `compañia` varchar(30) DEFAULT NULL,
+  `company` varchar(30) DEFAULT NULL,
   `id_region` INT(30) DEFAULT NULL,
-  `id_pais` INT(30) DEFAULT NULL,
-  `id_ciudad` INT(30) DEFAULT NULL,
-  `dirección` varchar(30) DEFAULT NULL,
-  `interés` varchar(30) DEFAULT NULL,
-  `id_canal_contacto` INT(30) DEFAULT NULL,
-  `cuenta_usuario` varchar(30) DEFAULT NULL,
-  `preferencias` varchar(30) DEFAULT NULL, 
+  `id_country` INT(30) DEFAULT NULL,
+  `id_city` INT(30) DEFAULT NULL,
+  `adress` varchar(30) DEFAULT NULL,
+  `interest` varchar(30) DEFAULT NULL,
+  `id_contact_channel` INT(30) DEFAULT NULL,
+  `user_account` varchar(30) DEFAULT NULL,
+  `preferences` varchar(30) DEFAULT NULL, 
     PRIMARY KEY(`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `canales_contacto` (`id` int(200) NOT NULL, `canal` varchar(30) DEFAULT NULL, PRIMARY KEY(`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE `contact_channel` (`id` int(200) NOT NULL, `channel` varchar(30) DEFAULT NULL, PRIMARY KEY(`id`)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-ALTER TABLE `ciudades`
-  ADD KEY `id_pais` (`id_pais`),
+ALTER TABLE `cities`
+  ADD KEY `id_country` (`id_country`),
   ADD KEY `id_region` (`id_region`);
 
-ALTER TABLE `paises`
+ALTER TABLE `countries`
   ADD KEY `id_region` (`id_region`);
  
-ALTER TABLE `contactos`
+ALTER TABLE `contacts`
   ADD KEY `id_region` (`id_region`),
-  ADD KEY `id_pais` (`id_pais`),
-  ADD KEY `id_canal_contacto` (`id_canal_contacto`),
-  ADD KEY `id_ciudad` (`id_ciudad`);
+  ADD KEY `id_country` (`id_country`),
+  ADD KEY `id_contact_channel` (`id_contact_channel`),
+  ADD KEY `id_city` (`id_city`);
 
-ALTER TABLE `compañías`
-  ADD KEY `id_ciudad` (`id_ciudad`);
+ALTER TABLE `companies`
+  ADD KEY `id_city` (`id_city`);
 
-INSERT INTO `usuarios` (`usuario_id`, `nombre`, `apellido`, `email`, `perfil`, `password`) VALUES ('NULL', 'Administrador', 'Administrador', 'Administrador@gmail.com', 'Admin', 'password')
+INSERT INTO `users` (`user_id`, `name`, `last_name`, `email`, `rol`, `password`) VALUES ('NULL', 'Administrador', 'Administrador', 'Administrador@gmail.com', 'Admin', 'password')
