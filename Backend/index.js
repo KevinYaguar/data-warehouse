@@ -14,19 +14,19 @@ app.use(express.json());
 //////////////////////////////////////////////////IMPORTS //////////////////////////////////////////////////////
 ///////USERS//////////////////////////////
 const {insertUser, search_user, get_users_list, update_user, delete_user} = require('./Users/Users-Functions');
-const {data_request, if_user_exist_next, user_pass, check_rol, if_user_exist_reject} = require('./Users/User-Middlewares');
+const {data_request_login, if_user_exist_next, user_pass, check_rol, if_user_exist_reject, data_request_create_user, rol_correct, data_request_user_info, require_email} = require('./Users/User-Middlewares');
 ////////////////////////////////////////////
 ///////REGIONS, CITIES, COUNTRIES////////////
 const { get_cities_from, insert_place, get_all_places, delete_place, update_place} = require('./Regions/Regions-Functions');
 const {if_exits_reject, region_exists_next, country_exists_next, data_request_places, check_table} = require('./Regions/Regions-Middlewares')
 /////////////////////////////////////////////
 ///////COMPANIES/////////////////////////////
-const {insert_company} = require('./Companies/Companies-Functions')
+const {insert_company, get_all_companies, delete_company} = require('./Companies/Companies-Functions')
 //////////////////////////////////////////////
 
 app.use(expressjwt({secret: jwtClave, algorithms:['sha1', 'RS256', 'HS256']}).unless({ path: ['/login']}));
 
-app.post('/create_user', check_rol, if_user_exist_reject, (req, res)=>{
+app.post('/create_user', check_rol, data_request_create_user, rol_correct, if_user_exist_reject, (req, res)=>{
     let {name, last_name, email, rol, password} = req.body;
 
     insertUser(name, last_name, email, rol, password)
@@ -38,7 +38,7 @@ app.post('/create_user', check_rol, if_user_exist_reject, (req, res)=>{
         }).catch(e=> console.log(e))
 })
 
-app.post('/login', data_request, if_user_exist_next, user_pass, (req, res)=>{
+app.post('/login', data_request_login, if_user_exist_next, user_pass, (req, res)=>{
     let {email} = req.body;
     
     let token = jwt.sign({email: email}, jwtClave);
@@ -51,7 +51,7 @@ app.post('/login', data_request, if_user_exist_next, user_pass, (req, res)=>{
 
 })
 
-app.get('/user_info', (req, res) => {
+app.get('/user_info', data_request_user_info, (req, res) => {
     let {email} = req.body;
 
     search_user(email)
@@ -67,7 +67,7 @@ app.get('/users_list', check_rol, (req, res)=>{
         })
 })
 
-app.put('/alter_user', check_rol, if_user_exist_next, (req, res) => {
+app.put('/alter_user', check_rol, require_email, if_user_exist_next, (req, res) => {
     let {email, field, new_value} = req.body;
     update_user(email, field, new_value)
         .then(response => {
@@ -78,7 +78,7 @@ app.put('/alter_user', check_rol, if_user_exist_next, (req, res) => {
         })
 })
 
-app.delete('/delete_user', check_rol, if_user_exist_next, (req, res)=>{
+app.delete('/delete_user', check_rol, require_email,if_user_exist_next, (req, res)=>{
     let {email} = req.body;
     delete_user(email)
         .then(response => {
@@ -164,8 +164,8 @@ app.put('/update_place', (req, res) => {
 
 app.post('/insert_company', check_rol, (req, res) => {
     
-    let {name, adress, telephone, email, id_city} = req.body;
-    insert_company(name, adress, telephone, email, id_city)
+    let {name, adress, telephone, email, city} = req.body;
+    insert_company(name, adress, telephone, email, city)
         .then(response => {
             res.status(200).send({
                 status:200,
@@ -174,6 +174,23 @@ app.post('/insert_company', check_rol, (req, res) => {
         })
 })
 
+app.get('/companies', check_rol,(req, res) => {
+    get_all_companies()
+        .then(response => {
+            res.status(200).send(response);
+        })
+})
+
+app.delete('/delete_company', (req, res) => {
+    let {id_company} = req.body;
+    delete_company(id_company)
+        .then(response => {
+            res.status(200).send({
+                status:200,
+                messege:` Company deleted successfully`
+            })
+        })
+})
 
 
 ///////////////////////////////////

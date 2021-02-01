@@ -9,7 +9,7 @@ CREATE TABLE `data_warehouse`.`countries`(`id` INT(200) NOT NULL AUTO_INCREMENT 
 
 CREATE TABLE `data_warehouse`.`cities`(`id` INT(200) NOT NULL AUTO_INCREMENT , `city` VARCHAR(30), `id_region` INT(200), `id_country` INT(200), PRIMARY KEY(`id`)) ENGINE = INNODB;
 
-CREATE TABLE `data_warehouse`.`companies`(`id` INT(200) NOT NULL AUTO_INCREMENT , `name` VARCHAR(30), `adress` VARCHAR(30), `email` VARCHAR(30), `telephone` INT(30), `id_city` INT(30), PRIMARY KEY(`id`)) ENGINE = INNODB;
+CREATE TABLE `data_warehouse`.`companies`(`id` INT(200) NOT NULL AUTO_INCREMENT , `name` VARCHAR(30), `adress` VARCHAR(30), `email` VARCHAR(30), `telephone` INT(30), `city` VARCHAR(30), PRIMARY KEY(`id`)) ENGINE = INNODB;
 
 CREATE TABLE `contacts` (
   `id` int(200) NOT NULL,
@@ -46,6 +46,6 @@ ALTER TABLE `contacts`
   ADD KEY `id_city` (`id_city`);
 
 ALTER TABLE `companies`
-  ADD KEY `id_city` (`id_city`);
+  ADD KEY `city` (`city`);
 
 INSERT INTO `users` (`user_id`, `name`, `last_name`, `email`, `rol`, `password`) VALUES ('NULL', 'Administrador', 'Administrador', 'Administrador@gmail.com', 'Admin', 'password')

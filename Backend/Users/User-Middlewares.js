@@ -18,7 +18,7 @@ const jwtClave = process.env.CLAVE;
 
 const {search_user} = require('../Users/Users-Functions')
 
-const data_request = (req, res, next) => {
+const data_request_login = (req, res, next) => {
     let{email, password} = req.body;
 
     if(email && password){
@@ -30,6 +30,55 @@ const data_request = (req, res, next) => {
         })
     }
 }
+
+const require_email = (req, res, next) => {
+    let {email} = req.body;
+    if(email){
+        next();
+    } else {
+        res.status(401).send({
+            status: 401,
+            messege:' Missing data'
+        })
+    }
+}
+
+const data_request_create_user = (req, res, next) => {
+    let {name, last_name, email, rol, password} = req.body;
+
+    if(name && last_name && email && rol && password){
+        next();
+    } else {
+        res.status(200).send({
+            status:400,
+            messege: 'Missing data'
+        })
+    }
+}
+
+const data_request_user_info = (req, res, next) => {
+    let {email} = req.body;
+    if(email){
+        next();
+    } else {
+        res.status(400).send({
+            status:400,
+            messege:'Missing data'
+        })
+    }
+}
+
+const rol_correct = (req, res, next) => {
+    let {rol} = req.body;
+    if(rol === 'Admin' || rol === 'Basic') {
+        next();
+    }else{
+        res.status(401).send({
+            status:401,
+            messege:'rol only admits Admin or Basic'
+        })
+    }
+} 
 
 const if_user_exist_next = (req, res, next) => {
     let {email} = req.body;
@@ -96,14 +145,16 @@ const check_rol = (req, res, next) => {
                 })
             }
         })
-
-
 }
 
 module.exports = {
-    data_request,
+    data_request_login,
     if_user_exist_next,
     user_pass,
     check_rol,
-    if_user_exist_reject
+    if_user_exist_reject,
+    data_request_create_user,
+    rol_correct,
+    data_request_user_info,
+    require_email
 }
