@@ -1,0 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
+.navbar-color{
+    background-color: #0683F9;
+    
+}
+.nav-items-color{
+    color:white !important;
+    font-family: 'Open Sans', sans-serif !important;
+}
+
