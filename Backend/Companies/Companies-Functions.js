@@ -28,8 +28,14 @@ async function delete_company(id) {
     return result;
 }
 
+async function update_company(company_id, field, new_value){
+    let result = sequelize.query(`UPDATE COMPANIES SET ${field} = ? WHERE id = ?`, {replacements: [new_value, company_id]})
+    return result;
+}
+
 module.exports = {
     insert_company,
     get_all_companies,
-    delete_company
+    delete_company,
+    update_company
 }

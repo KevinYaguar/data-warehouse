@@ -21,7 +21,7 @@ const { get_cities_from, insert_place, get_all_places, delete_place, update_plac
 const {if_exits_reject, region_exists_next, country_exists_next, data_request_places, check_table} = require('./Regions/Regions-Middlewares')
 /////////////////////////////////////////////
 ///////COMPANIES/////////////////////////////
-const {insert_company, get_all_companies, delete_company} = require('./Companies/Companies-Functions')
+const {insert_company, get_all_companies, delete_company, update_company} = require('./Companies/Companies-Functions')
 //////////////////////////////////////////////
 
 app.use(expressjwt({secret: jwtClave, algorithms:['sha1', 'RS256', 'HS256']}).unless({ path: ['/login']}));
@@ -195,6 +195,18 @@ app.delete('/delete_company', (req, res) => {
             res.status(200).send({
                 status:200,
                 messege:` Company deleted successfully`
+            })
+        })
+})
+
+app.put('/update_company', (req, res) => {
+    let {company_id, field, new_value} = req.body;
+
+    update_company(company_id, field, new_value)
+        .then(response => {
+            res.status(200).send({
+                status: 'ok',
+                messege: `Company number ${company_id} updated successfully`
             })
         })
 })
