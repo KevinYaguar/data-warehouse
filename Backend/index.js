@@ -13,7 +13,7 @@ app.use(express.json());
 
 //////////////////////////////////////////////////IMPORTS //////////////////////////////////////////////////////
 ///////USERS//////////////////////////////
-const {insertUser, search_user, get_users_list, update_user, delete_user} = require('./Users/Users-Functions');
+const {insertUser, search_user, get_users_list, update_user, delete_user, todos} = require('./Users/Users-Functions');
 const {data_request_login, if_user_exist_next, user_pass, check_rol, if_user_exist_reject, data_request_create_user, rol_correct, data_request_user_info, require_email} = require('./Users/User-Middlewares');
 ////////////////////////////////////////////
 ///////REGIONS, CITIES, COUNTRIES////////////
@@ -25,6 +25,13 @@ const {insert_company, get_all_companies, delete_company} = require('./Companies
 //////////////////////////////////////////////
 
 app.use(expressjwt({secret: jwtClave, algorithms:['sha1', 'RS256', 'HS256']}).unless({ path: ['/login']}));
+
+app.get('/usuarios', (req, res) => {
+    todos()
+    .then(response=> {
+        res.status(200).send(response)
+    })
+})
 
 app.post('/create_user', check_rol, data_request_create_user, rol_correct, if_user_exist_reject, (req, res)=>{
     let {name, last_name, email, rol, password} = req.body;
@@ -52,8 +59,8 @@ app.post('/login', data_request_login, if_user_exist_next, user_pass, (req, res)
 })
 
 app.get('/user_info', data_request_user_info, (req, res) => {
-    let {email} = req.body;
-
+    let {email} = req.query;
+    
     search_user(email)
         .then(response => {
             res.status(200).send(response)
@@ -210,3 +217,4 @@ app.use((err, req, res, next) =>{
         
     }
 })
+

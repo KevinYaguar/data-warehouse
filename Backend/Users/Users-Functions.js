@@ -12,6 +12,14 @@ const sequelize = new Sequelize(
         }
 });
 
+async function todos () {
+    let result = sequelize.query(`SELECT * FROM USERS`, {type: sequelize.QueryTypes.SELECT}, function(error, rows, fields) {
+        if (error){console.log(error)}
+        else { console.log(rows)}
+    })
+    return result;
+}
+
 async function insertUser (name, last_name, email, rol, password){
     let result = sequelize.query('INSERT INTO users (user_id, name, last_name, email, rol, password) VALUES (?, ?, ?, ?, ?, ?)', {
         replacements: ['NULL', name, last_name, email, rol, password]
@@ -52,5 +60,5 @@ module.exports = {
     get_users_list,
     update_user,
     delete_user,
-    
+    todos
 }

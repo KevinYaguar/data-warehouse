@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap');
+.navbar-color{
+    background-color: #0683F9;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.nav-items{
+    color:white !important;
+    font-family: 'Open Sans', sans-serif !important;
+    font-weight: bold;
+}
+
+.nav-item{
+    :hover{
+        border-bottom: 2px solid #ffffff;
+    }
+}
+
+.none{
+    display: none !important;
+}
+
+.flex-nav{
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+

@@ -20,7 +20,7 @@ const {search_user} = require('../Users/Users-Functions')
 
 const data_request_login = (req, res, next) => {
     let{email, password} = req.body;
-
+    console.log(req.body)
     if(email && password){
         next();
     } else {
@@ -57,7 +57,7 @@ const data_request_create_user = (req, res, next) => {
 }
 
 const data_request_user_info = (req, res, next) => {
-    let {email} = req.body;
+    let {email} = req.query;
     if(email){
         next();
     } else {
@@ -158,3 +158,4 @@ module.exports = {
     data_request_user_info,
     require_email
 }
+
