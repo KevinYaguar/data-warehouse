@@ -12,14 +12,6 @@ const sequelize = new Sequelize(
         }
 });
 
-async function todos () {
-    let result = sequelize.query(`SELECT * FROM USERS`, {type: sequelize.QueryTypes.SELECT}, function(error, rows, fields) {
-        if (error){console.log(error)}
-        else { console.log(rows)}
-    })
-    return result;
-}
-
 async function insertUser (name, last_name, email, rol, password){
     let result = sequelize.query('INSERT INTO users (user_id, name, last_name, email, rol, password) VALUES (?, ?, ?, ?, ?, ?)', {
         replacements: ['NULL', name, last_name, email, rol, password]
@@ -34,22 +26,13 @@ async function search_user(email) {
     return result;
 }
 
-async function get_users_list (){
-    let result = sequelize.query(`SELECT * FROM users`, {
-        type: sequelize.QueryTypes.SELECT
-    })
-    return result;
-}
-
 async function update_user (user, field, new_value) {
     let result = sequelize.query(`UPDATE users SET ${field} = ? WHERE email = ?`, {replacements: [ new_value, user]})
-
     return result;
 }
 
 async function delete_user(user) {
     let result = sequelize.query(`DELETE FROM users WHERE email = ?`, {replacements: [user]})
-
     return result;
 }
 
@@ -57,8 +40,7 @@ async function delete_user(user) {
 module.exports = {
     insertUser,
     search_user,
-    get_users_list,
     update_user,
-    delete_user,
-    todos
+    delete_user
+
 }

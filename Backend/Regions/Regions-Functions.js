@@ -26,10 +26,7 @@ async function insert_place(table, place, id_region, id_country){
     }
 }
 
-async function get_all_places(place){
-    let result = sequelize.query(`SELECT * FROM ${place}`, {type: sequelize.QueryTypes.SELECT})
-    return result;
-}
+
 
 
 async function get_cities_from(id, places, place) {
@@ -39,20 +36,15 @@ async function get_cities_from(id, places, place) {
     return result;
 }
 
-async function delete_place (id, table) {
-    let result = sequelize.query(`DELETE FROM ${table} WHERE id = ?`, {replacements: [id]})
+async function get_place (nombre, places, column) {
+    let result = sequelize.query(`SELECT * FROM ${places} WHERE ${column} = ?`, {replacements: [nombre], type: sequelize.QueryTypes.SELECT})
+
     return result;
 }
 
-async function update_place(id, table, field, new_value){
-    let result = sequelize.query(`UPDATE ${table} SET ${field} = ? WHERE id = ?`, {replacements: [new_value, id]})
-    return result;
-}
 
 module.exports = {
     get_cities_from,
     insert_place,
-    get_all_places,
-    delete_place,
-    update_place
+    get_place
 }

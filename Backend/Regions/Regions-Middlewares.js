@@ -1,27 +1,10 @@
-const Sequelize = require('sequelize');
-const db_data = require('../db_connection_data');
-const sequelize = new Sequelize(
-    db_data.conf_db_name,
-    db_data.conf_user,
-    db_data.conf_password, {
-        host: db_data.conf_db_host,
-        dialect: 'mysql',
-        port: db_data.conf_port,
-        dialectOptions: {
-            multipleStatements: true
-        }
-});
-
-async function get_place (nombre, places, column) {
-    let result = sequelize.query(`SELECT * FROM ${places} WHERE ${column} = ?`, {replacements: [nombre], type: sequelize.QueryTypes.SELECT})
-
-    return result;
-}
+const {get_place} = require('./Regions-Functions')
+const {select_id_from} = require('../General-Functions/General-Functions')
 
 const region_exists_next = (req, res, next) => {
     let {id_region} = req.body;
     if(id_region){
-        sequelize.query(`SELECT * FROM REGIONS WHERE id = ${id_region}`, {type: sequelize.QueryTypes.SELECT})
+        select_id_from('REGIONS', id_region)
         .then(response => {
             console.log(response)
             if(response.length === 0){
@@ -39,7 +22,8 @@ const region_exists_next = (req, res, next) => {
 }
 
 const data_request_places = (req, res, next) => {
-    let {id_country, id_region, table} = req.body;
+    let {table} = req.body;
+    let {id_country, id_region} = req.query;
     if(table === 'COUNTRIES'){
         if(id_region && id_region > 0){
             next();
@@ -66,9 +50,9 @@ const data_request_places = (req, res, next) => {
 
 
 const country_exists_next = (req, res, next) => {
-    let {id_country} = req.body;
+    let {id_country} = req.query;
     if(id_country){
-        sequelize.query(`SELECT * FROM COUNTRIES WHERE id = ${id_country}`, {type: sequelize.QueryTypes.SELECT})
+        select_id_from('COUNTRIES', id_country)
         .then(response => {
             console.log(response)
             if(response.length === 0){

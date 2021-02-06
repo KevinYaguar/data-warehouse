@@ -12,26 +12,27 @@ app.use(cors());
 app.use(express.json());
 
 //////////////////////////////////////////////////IMPORTS //////////////////////////////////////////////////////
+///////////////////GENERAL////////////
+const {select_all_from, update, delete_id_from} = require('./General-Functions/General-Functions')
+
 ///////USERS//////////////////////////////
-const {insertUser, search_user, get_users_list, update_user, delete_user, todos} = require('./Users/Users-Functions');
+const {insertUser, search_user, update_user, delete_user} = require('./Users/Users-Functions');
 const {data_request_login, if_user_exist_next, user_pass, check_rol, if_user_exist_reject, data_request_create_user, rol_correct, data_request_user_info, require_email} = require('./Users/User-Middlewares');
 ////////////////////////////////////////////
+
 ///////REGIONS, CITIES, COUNTRIES////////////
-const { get_cities_from, insert_place, get_all_places, delete_place, update_place} = require('./Regions/Regions-Functions');
+const { get_cities_from, insert_place} = require('./Regions/Regions-Functions');
 const {if_exits_reject, region_exists_next, country_exists_next, data_request_places, check_table} = require('./Regions/Regions-Middlewares')
 /////////////////////////////////////////////
+
 ///////COMPANIES/////////////////////////////
-const {insert_company, get_all_companies, delete_company, update_company} = require('./Companies/Companies-Functions')
+const {insert_company} = require('./Companies/Companies-Functions')
+const {body_complet, city_exist} = require('./Companies/Companies-Middlewares')
+
 //////////////////////////////////////////////
 
 app.use(expressjwt({secret: jwtClave, algorithms:['sha1', 'RS256', 'HS256']}).unless({ path: ['/login']}));
 
-app.get('/usuarios', (req, res) => {
-    todos()
-    .then(response=> {
-        res.status(200).send(response)
-    })
-})
 
 app.post('/create_user', check_rol, data_request_create_user, rol_correct, if_user_exist_reject, (req, res)=>{
     let {name, last_name, email, rol, password} = req.body;
@@ -68,7 +69,7 @@ app.get('/user_info', data_request_user_info, (req, res) => {
 })
 
 app.get('/users_list', check_rol, (req, res)=>{
-    get_users_list()
+    select_all_from('USERS')
         .then(response => {
             res.status(200).send(response)
         })
@@ -99,7 +100,8 @@ app.delete('/delete_user', check_rol, require_email,if_user_exist_next, (req, re
 ////////////////////////////// REGIONS, COUNTRIES Y CITIES////////////////////////////
 
 app.post('/insert_place', check_rol, check_table, data_request_places, if_exits_reject,  region_exists_next, country_exists_next, (req, res) => {
-    let {place, table, id_region, id_country} = req.body;
+    let {place, table} = req.body;
+    let {id_region, id_country} = req.query;
     insert_place(table, place, id_region, id_country)
             .then(response => {
                 res.status(200).send({
@@ -110,14 +112,14 @@ app.post('/insert_place', check_rol, check_table, data_request_places, if_exits_
 })
 
 app.get('/regions', check_rol, (req, res) => {
-    get_all_places('REGIONS')
+    select_all_from('REGIONS')
         .then(response => {
             res.status(200).send(response)
         })
 })
 
 app.get('/countries', check_rol, (req, res) => {
-    get_all_places('COUNTRIES')
+    select_all_from('COUNTRIES')
         .then(response => {
             res.status(200).send(response)
         })
@@ -137,7 +139,7 @@ app.get('/cities', check_rol, (req, res) => {
                 res.status(200).send(response)
             })
     } else{
-        get_all_places('CITIES')
+        select_all_from('CITIES')
         .then(response => {
             res.status(200).send(response)
         })
@@ -147,7 +149,7 @@ app.get('/cities', check_rol, (req, res) => {
 app.delete('/delete_places', check_rol, (req, res) => {
     let {id, table} = req.body;
 
-    delete_place(id, table)
+    delete_id_from(id, table)
         .then(response=> {
             res.status(200).send({
                 status: 200,
@@ -159,7 +161,7 @@ app.delete('/delete_places', check_rol, (req, res) => {
 app.put('/update_place', (req, res) => {
     let {id, table, field, new_value} = req.body;
 
-    update_place(id, table, field, new_value)
+    update(id, table, field, new_value)
         .then(response => {
             res.status(200).send({
                 status:200,
@@ -169,7 +171,7 @@ app.put('/update_place', (req, res) => {
 })
 //////////////////////////////////////    COMPAÑIAS     ///////////////////////////////////////
 
-app.post('/insert_company', check_rol, (req, res) => {
+app.post('/insert_company', check_rol, body_complet, city_exist, (req, res) => {
     
     let {name, adress, telephone, email, city} = req.body;
     insert_company(name, adress, telephone, email, city)
@@ -182,7 +184,7 @@ app.post('/insert_company', check_rol, (req, res) => {
 })
 
 app.get('/companies', check_rol,(req, res) => {
-    get_all_companies()
+    select_all_from('COMPANIES')
         .then(response => {
             res.status(200).send(response);
         })
@@ -190,7 +192,8 @@ app.get('/companies', check_rol,(req, res) => {
 
 app.delete('/delete_company', (req, res) => {
     let {id_company} = req.body;
-    delete_company(id_company)
+
+    delete_id_from(id_company, 'COMPANIES')
         .then(response => {
             res.status(200).send({
                 status:200,
@@ -202,7 +205,7 @@ app.delete('/delete_company', (req, res) => {
 app.put('/update_company', (req, res) => {
     let {company_id, field, new_value} = req.body;
 
-    update_company(company_id, field, new_value)
+    update(company_id, 'COMPANIES', field, new_value)
         .then(response => {
             res.status(200).send({
                 status: 'ok',
